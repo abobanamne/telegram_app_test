@@ -6,7 +6,7 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
 
-  <title>My Telegram Mini App</title>
+  <title>Геймфикация рутины</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -15,37 +15,55 @@
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      padding: 24px;
-      font-family: Arial, sans-serif;
-      background: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-text-color, #222222);
+    :root {
+      --accent: var(--tg-theme-button-color, #3287d8);
+      --text: var(--tg-theme-text-color, #202124);
+      --muted: var(--tg-theme-hint-color, #80868b);
+      --panel: var(--tg-theme-secondary-bg-color, #f1f3f5);
+      --bg: var(--tg-theme-bg-color, #ffffff);
     }
 
-    .container {
-      max-width: 480px;
+    body {
+      margin: 0;
+      padding: 24px 18px;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 420px;
       margin: 0 auto;
       text-align: center;
     }
 
-    .score {
-      font-size: 24px;
+    h2 {
+      margin: 0 0 18px;
+    }
+
+    .result-status {
+      margin: 0 0 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--panel);
       font-weight: bold;
-      margin: 24px 0;
+      line-height: 1.5;
+    }
+
+    .result-status[hidden] {
+      display: none;
     }
 
     .image-button {
       display: block;
       width: 100%;
       padding: 0;
-      border: 0;
+      border: none;
       border-radius: 20px;
       overflow: hidden;
       background: transparent;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s ease;
     }
 
     .image-button img {
@@ -55,48 +73,170 @@
     }
 
     .image-button:active {
-      transform: scale(0.96);
+      transform: scale(0.98);
+    }
+
+    .controls {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 20px;
+      background: var(--panel);
+    }
+
+    .controls[hidden] {
+      display: none;
+    }
+
+    .panel-title {
+      margin: 0 0 14px;
+      font-size: 17px;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .step-button {
+      width: 54px;
+      height: 54px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 14px;
+      background: var(--accent);
+      color: var(--tg-theme-button-text-color, #fff);
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .number-input {
+      width: 100px;
+      height: 54px;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      background: var(--bg);
+      color: var(--text);
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .pending-status {
+      min-height: 42px;
+      margin: 16px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .confirm-button {
+      width: 100%;
+      min-height: 50px;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: var(--accent);
+      color: var(--tg-theme-button-text-color, #fff);
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .hint {
-      opacity: 0.7;
-      font-size: 14px;
-    }
-
-    #status {
-      min-height: 24px;
-      margin-top: 18px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
     }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <h2>🎁 Бонусная кнопка</h2>
+  <main class="app">
 
-    <p>Нажми на изображение, чтобы получить очки!</p>
+    <h2>Управление количеством часов</h2>
 
-    <div class="score">
-      ⭐ Очки: <span id="score">0</span>
-    </div>
+    <div
+      id="resultStatus"
+      class="result-status"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
 
     <button
+      id="imageButton"
       class="image-button"
-      id="bonusButton"
       type="button"
-      aria-label="Получить 1 очко"
+      aria-label="Открыть панель управления"
+      aria-expanded="false"
     >
       <img
         src="./images/bonus.png"
-        alt="Нажми, чтобы получить бонус"
+        alt="Нажми, чтобы изменить количество"
       >
     </button>
 
-    <p class="hint">Нажимай на картинку 👆</p>
+    <section id="controls" class="controls" hidden>
 
-    <p id="status" aria-live="polite">
-      Ты готов? 🚀
-    </p>
+      <p class="panel-title">Введи количество часов</p>
+
+      <div class="counter">
+
+        <button
+          id="minusButton"
+          class="step-button"
+          type="button"
+          aria-label=""
+        >−</button>
+
+        <input
+          id="numberInput"
+          class="number-input"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          max="999999"
+          step="1"
+          value="1"
+          aria-label="Текущее количество часов"
+        >
+
+        <button
+          id="plusButton"
+          class="step-button"
+          type="button"
+          aria-label=""
+        >+</button>
+
+      </div>
+
+      <p
+        id="pendingStatus"
+        class="pending-status"
+        aria-live="polite"
+      >
+        Выбрано часов: 1. Подтверди свой выбор.
+      </p>
+
+      <button
+        id="confirmButton"
+        class="confirm-button"
+        type="button"
+      >
+        ✓ Подтвердить
+      </button>
+
+    </section>
+
+    <p class="hint">Нажми на домик, чтобы обозначить число</p>
+
   </main>
 
   <script>
@@ -107,23 +247,102 @@
       tg.expand();
     }
 
-    let score = 0;
+    const imageButton = document.getElementById("imageButton");
+    const controls = document.getElementById("controls");
+    const numberInput = document.getElementById("numberInput");
+    const minusButton = document.getElementById("minusButton");
+    const plusButton = document.getElementById("plusButton");
+    const confirmButton = document.getElementById("confirmButton");
+    const pendingStatus = document.getElementById("pendingStatus");
+    const resultStatus = document.getElementById("resultStatus");
 
-    const scoreElement = document.getElementById("score");
-    const statusElement = document.getElementById("status");
-    const bonusButton = document.getElementById("bonusButton");
+    const MIN = 0;
+    const MAX = 999999;
 
-    bonusButton.addEventListener("click", () => {
-      // Выполняем действие
-      score += 1;
+    let confirmedNumber = null;
 
-      // Обновляем интерфейс
-      scoreElement.textContent = score;
-      statusElement.textContent = "🎉 Ты получил 1 очко!";
+    imageButton.addEventListener("click", () => {
+      const isOpening = controls.hidden;
 
-      // Виброотклик в Telegram, если доступен
-      tg?.HapticFeedback?.impactOccurred("medium");
+      if (isOpening) {
+        numberInput.value =
+          confirmedNumber === null ? 1 : confirmedNumber;
+
+        updatePendingStatus();
+        controls.hidden = false;
+        imageButton.setAttribute("aria-expanded", "true");
+      } else {
+        controls.hidden = true;
+        imageButton.setAttribute("aria-expanded", "false");
+      }
     });
+
+    function getCurrentNumber() {
+      const value = Number(numberInput.value);
+
+      if (numberInput.value.trim() === "" || !Number.isFinite(value)) {
+        return MIN;
+      }
+
+      return Math.min(MAX, Math.max(MIN, Math.trunc(value)));
+    }
+
+    function updatePendingStatus() {
+      const value = getCurrentNumber();
+
+      pendingStatus.textContent =
+        `Выбрано часов: ${value}. Подтверди свой выбор.`;
+
+      minusButton.disabled = value <= MIN;
+      plusButton.disabled = value >= MAX;
+    }
+
+    minusButton.addEventListener("click", () => {
+      numberInput.value = Math.max(
+        MIN,
+        getCurrentNumber() - 1
+      );
+
+      updatePendingStatus();
+      tg?.HapticFeedback?.selectionChanged();
+    });
+
+    plusButton.addEventListener("click", () => {
+      numberInput.value = Math.min(
+        MAX,
+        getCurrentNumber() + 1
+      );
+
+      updatePendingStatus();
+      tg?.HapticFeedback?.selectionChanged();
+    });
+
+    numberInput.addEventListener("input", () => {
+      updatePendingStatus();
+    });
+
+    numberInput.addEventListener("change", () => {
+      numberInput.value = getCurrentNumber();
+      updatePendingStatus();
+    });
+
+    confirmButton.addEventListener("click", () => {
+      confirmedNumber = getCurrentNumber();
+
+      numberInput.value = confirmedNumber;
+
+      resultStatus.textContent =
+        `✓ Подтверждено! Текущее число часов: ${confirmedNumber}`;
+
+      resultStatus.hidden = false;
+
+      controls.hidden = true;
+      imageButton.setAttribute("aria-expanded", "false");
+
+      tg?.HapticFeedback?.notificationOccurred("success");
+    });
+
+    updatePendingStatus();
   </script>
 </body>
 </html>
