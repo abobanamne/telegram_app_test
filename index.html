@@ -3,8 +3,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Doxb1t</title>
 
@@ -17,90 +16,115 @@
 
     body {
       margin: 0;
-      padding: 24px 18px;
+      padding: 22px 16px;
       font-family: Arial, sans-serif;
-      background: var(--tg-theme-bg-color, #fff);
-      color: var(--tg-theme-text-color, #222);
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #222222);
     }
 
     .app {
-      max-width: 420px;
-      margin: auto;
-      text-align: center;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
     }
 
-    .main-button {
-      width: 100%;
-      padding: 16px;
+    h2 {
+      margin: 0 0 20px;
+      text-align: center;
+      font-size: 23px;
+    }
+
+    /* Шесть кнопок */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fly-button {
+      min-width: 0;
+      min-height: 54px;
+      padding: 10px 4px;
       border: none;
-      border-radius: 14px;
-      background: var(--tg-theme-button-color, #2787e8);
-      color: var(--tg-theme-button-text-color, white);
-      font-size: 17px;
+      border-radius: 13px;
+      background: var(--tg-theme-button-color, #3287d8);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
+    .fly-button:active {
+      filter: brightness(0.9);
     }
 
-    .menu[hidden] {
-      display: none;
-    }
-
-    .option-button {
-      padding: 14px 8px;
-      border: 1px solid var(--tg-theme-hint-color, #ddd);
-      border-radius: 12px;
-      background: var(--tg-theme-secondary-bg-color, #f1f1f1);
-      color: var(--tg-theme-text-color, #222);
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .option-button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
+    /* Статус */
     .status {
       margin: 18px 0;
+      text-align: center;
       font-size: 14px;
-      color: var(--tg-theme-hint-color, #777);
+      line-height: 1.5;
+      color: var(--tg-theme-hint-color, #777777);
     }
 
-    .image-grid {
+    /* Сетка картинок */
+    .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 20px;
+      gap: 14px;
     }
 
-    .image-slot {
+    .cell {
+      min-width: 0;
+    }
+
+    .picture-box {
+      position: relative;
+      width: 100%;
       aspect-ratio: 1 / 1;
       overflow: hidden;
-      border-radius: 14px;
-      background: var(--tg-theme-secondary-bg-color, #f1f1f1);
-      border: 1px dashed var(--tg-theme-hint-color, #bbb);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 15px;
+      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      border: 1px solid var(--tg-theme-section-separator-color, #dddddd);
     }
 
-    .image-slot img {
+    .picture-box img {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .empty-slot {
-      font-size: 13px;
-      color: var(--tg-theme-hint-color, #888);
+    .caption {
+      margin-top: 9px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    /* Летящая копия кнопки */
+    .flying {
+      position: fixed !important;
+      z-index: 9999;
+      margin: 0 !important;
+      pointer-events: none !important;
+      transform: none !important;
+      transition:
+        left 0.55s cubic-bezier(.2, .8, .2, 1),
+        top 0.55s cubic-bezier(.2, .8, .2, 1),
+        width 0.55s ease,
+        height 0.55s ease,
+        opacity 0.55s ease,
+        border-radius 0.55s ease;
+      will-change: left, top, width, height;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flying {
+        transition-duration: 0.01ms;
+      }
     }
   </style>
 </head>
@@ -108,38 +132,54 @@
 <body>
   <main class="app">
 
-    <h2>Мои домики</h2>
+    <h2>Моя задачи</h2>
 
-    <button
-      id="mainButton"
-      class="main-button"
-      type="button"
-      aria-expanded="false"
-    >
-      ＋ Открыть меню домиков
-    </button>
-
-    <div id="menu" class="menu" hidden>
-      <button class="option-button" data-add="1">
-        Добавить №1
-      </button>
-
-      <button class="option-button" data-add="2">
-        Добавить №2
-      </button>
+    <!-- Шесть постоянно работающих кнопок -->
+    <div class="buttons" id="buttons">
+      <button class="fly-button" type="button">Задача 1</button>
+      <button class="fly-button" type="button">Задача  2</button>
+      <button class="fly-button" type="button">Задача  3</button>
+      <button class="fly-button" type="button">Задача  4</button>
+      <button class="fly-button" type="button">Задача  5</button>
+      <button class="fly-button" type="button">Задача  6</button>
     </div>
 
-    <p id="status" class="status" aria-live="polite">
-      Добавлено домиков: 0 из 4
+    <p class="status" id="status" aria-live="polite">
+      Нажми на любую кнопку!
     </p>
 
-    <div id="imageGrid" class="image-grid">
-      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
-      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
-      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
-      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
-    </div>
+    <!-- Четыре постоянно видимые картинки -->
+    <div class="grid" id="grid">
 
+      <div class="cell">
+        <div class="picture-box" data-slot="0">
+          <img src="./images/bonus.png" alt="Первый">
+        </div>
+        <div class="caption">Первый домик</div>
+      </div>
+
+      <div class="cell">
+        <div class="picture-box" data-slot="1">
+          <img src="./images/bonus.png" alt="Второй">
+        </div>
+        <div class="caption">Второй домик</div>
+      </div>
+
+      <div class="cell">
+        <div class="picture-box" data-slot="2">
+          <img src="./images/bonus.png" alt="Третий">
+        </div>
+        <div class="caption">Третий домик</div>
+      </div>
+
+      <div class="cell">
+        <div class="picture-box" data-slot="3">
+          <img src="./images/bonus.png" alt="Четвёртый">
+        </div>
+        <div class="caption">Четвёртый домик</div>
+      </div>
+
+    </div>
   </main>
 
   <script>
@@ -148,72 +188,97 @@
     tg?.ready();
     tg?.expand();
 
-    const mainButton = document.getElementById("mainButton");
-    const menu = document.getElementById("menu");
-    const status = document.getElementById("status");
+    const buttons = [
+      ...document.querySelectorAll(".fly-button")
+    ];
+
     const slots = [
-      ...document.querySelectorAll(".image-slot")
-    ];
-    const optionButtons = [
-      ...document.querySelectorAll("[data-add]")
+      ...document.querySelectorAll(".picture-box")
     ];
 
-    const MAX_IMAGES = 4;
-    const imagePath = "./images/bonus.png";
+    const status = document.getElementById("status");
 
-    let imagesAdded = 0;
+    let totalFlights = 0;
 
-    // Открыть или закрыть две кнопки
-    mainButton.addEventListener("click", () => {
-      menu.hidden = !menu.hidden;
-
-      mainButton.setAttribute(
-        "aria-expanded",
-        String(!menu.hidden)
-      );
-
-      mainButton.textContent = menu.hidden
-        ? "＋ Открыть меню"
-        : "− Скрыть меню";
-    });
-
-    // Добавление одинаковых картинок
-    optionButtons.forEach((button) => {
+    buttons.forEach((button) => {
       button.addEventListener("click", () => {
-        if (imagesAdded >= MAX_IMAGES) {
-          status.textContent = "Достигнут лимит: 4 домика.";
-          return;
-        }
 
-        const slot = slots[imagesAdded];
-        const img = document.createElement("img");
+        // Выбираем случайную картинку
+        const randomIndex = Math.floor(
+          Math.random() * slots.length
+        );
 
-        img.src = imagePath;
-        img.alt = "Элемент коллекции";
+        const target = slots[randomIndex];
 
-        img.onerror = () => {
-          img.remove();
-          slot.innerHTML =
-            '<span class="empty-slot">Ошибка загрузки</span>';
-        };
+        // Координаты кнопки и картинки
+        const start = button.getBoundingClientRect();
+        const end = target.getBoundingClientRect();
 
-        slot.replaceChildren(img);
-        imagesAdded++;
+        // Создаём копию кнопки.
+        // Оригинал остаётся на месте и работает.
+        const flyer = button.cloneNode(true);
 
-        status.textContent =
-          `Добавлено домиков: ${imagesAdded} из ${MAX_IMAGES}`;
+        flyer.classList.add("flying");
+        flyer.setAttribute("aria-hidden", "true");
+        flyer.tabIndex = -1;
 
-        // Блокируем добавление после достижения лимита
-        if (imagesAdded >= MAX_IMAGES) {
-          optionButtons.forEach((item) => {
-            item.disabled = true;
-          });
+        Object.assign(flyer.style, {
+          left: start.left + "px",
+          top: start.top + "px",
+          width: start.width + "px",
+          height: start.height + "px",
+          opacity: "1"
+        });
+
+        document.body.appendChild(flyer);
+
+        // Сначала фиксируем начальную позицию,
+        // затем запускаем анимацию
+        flyer.getBoundingClientRect();
+
+        requestAnimationFrame(() => {
+          const currentEnd = target.getBoundingClientRect();
+
+          flyer.style.left =
+            (currentEnd.left + currentEnd.width * 0.25) + "px";
+
+          flyer.style.top =
+            (currentEnd.top + currentEnd.height * 0.25) + "px";
+
+          flyer.style.width =
+            (currentEnd.width * 0.5) + "px";
+
+          flyer.style.height =
+            (currentEnd.height * 0.5) + "px";
+
+          flyer.style.opacity = "0.25";
+          flyer.style.borderRadius = "12px";
+        });
+
+        let finished = false;
+
+        function finishFlight() {
+          if (finished) return;
+          finished = true;
+
+          flyer.remove();
+
+          totalFlights++;
 
           status.textContent =
-            "Коллекция домиков заполнена: 4 из 4";
+            ``;
+
+          tg?.HapticFeedback?.impactOccurred("light");
         }
 
-        tg?.HapticFeedback?.impactOccurred("light");
+        flyer.addEventListener("transitionend", (event) => {
+          if (event.propertyName === "left") {
+            finishFlight();
+          }
+        });
+
+        // Защита от зависания анимации
+        setTimeout(finishFlight, 800);
       });
     });
   </script>
