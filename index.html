@@ -6,7 +6,7 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
 
-  <title>Геймфикация рутины</title>
+  <title>Doxb1t</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -15,144 +15,92 @@
       box-sizing: border-box;
     }
 
-    :root {
-      --accent: var(--tg-theme-button-color, #3287d8);
-      --text: var(--tg-theme-text-color, #202124);
-      --muted: var(--tg-theme-hint-color, #80868b);
-      --panel: var(--tg-theme-secondary-bg-color, #f1f3f5);
-      --bg: var(--tg-theme-bg-color, #ffffff);
-    }
-
     body {
       margin: 0;
       padding: 24px 18px;
       font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--tg-theme-bg-color, #fff);
+      color: var(--tg-theme-text-color, #222);
     }
 
     .app {
       max-width: 420px;
-      margin: 0 auto;
+      margin: auto;
       text-align: center;
     }
 
-    h2 {
-      margin: 0 0 18px;
-    }
-
-    .result-status {
-      margin: 0 0 16px;
-      padding: 14px;
-      border-radius: 14px;
-      background: var(--panel);
-      font-weight: bold;
-      line-height: 1.5;
-    }
-
-    .result-status[hidden] {
-      display: none;
-    }
-
-    .image-button {
-      display: block;
+    .main-button {
       width: 100%;
-      padding: 0;
+      padding: 16px;
       border: none;
-      border-radius: 20px;
-      overflow: hidden;
-      background: transparent;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .image-button img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .image-button:active {
-      transform: scale(0.98);
-    }
-
-    .controls {
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 20px;
-      background: var(--panel);
-    }
-
-    .controls[hidden] {
-      display: none;
-    }
-
-    .panel-title {
-      margin: 0 0 14px;
+      border-radius: 14px;
+      background: var(--tg-theme-button-color, #2787e8);
+      color: var(--tg-theme-button-text-color, white);
       font-size: 17px;
-    }
-
-    .counter {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .step-button {
-      width: 54px;
-      height: 54px;
-      flex-shrink: 0;
-      border: none;
-      border-radius: 14px;
-      background: var(--accent);
-      color: var(--tg-theme-button-text-color, #fff);
-      font-size: 30px;
+      font-weight: bold;
       cursor: pointer;
     }
 
-    .number-input {
-      width: 100px;
-      height: 54px;
-      border: 2px solid var(--accent);
-      border-radius: 14px;
-      background: var(--bg);
-      color: var(--text);
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    .pending-status {
-      min-height: 42px;
-      margin: 16px 0;
+    .menu[hidden] {
+      display: none;
+    }
+
+    .option-button {
+      padding: 14px 8px;
+      border: 1px solid var(--tg-theme-hint-color, #ddd);
+      border-radius: 12px;
+      background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+      color: var(--tg-theme-text-color, #222);
       font-size: 14px;
-      line-height: 1.5;
-      color: var(--muted);
-    }
-
-    .confirm-button {
-      width: 100%;
-      min-height: 50px;
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      background: var(--accent);
-      color: var(--tg-theme-button-text-color, #fff);
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: 0.45;
+    .option-button:disabled {
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
-    .hint {
-      margin-top: 16px;
+    .status {
+      margin: 18px 0;
+      font-size: 14px;
+      color: var(--tg-theme-hint-color, #777);
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .image-slot {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 14px;
+      background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+      border: 1px dashed var(--tg-theme-hint-color, #bbb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-slot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .empty-slot {
       font-size: 13px;
-      color: var(--muted);
+      color: var(--tg-theme-hint-color, #888);
     }
   </style>
 </head>
@@ -160,189 +108,114 @@
 <body>
   <main class="app">
 
-    <h2>Управление количеством часов</h2>
-
-    <div
-      id="resultStatus"
-      class="result-status"
-      role="status"
-      aria-live="polite"
-      hidden
-    ></div>
+    <h2>Мои домики</h2>
 
     <button
-      id="imageButton"
-      class="image-button"
+      id="mainButton"
+      class="main-button"
       type="button"
-      aria-label="Открыть панель управления"
       aria-expanded="false"
     >
-      <img
-        src="./images/bonus.png"
-        alt="Нажми, чтобы изменить количество"
-      >
+      ＋ Открыть меню домиков
     </button>
 
-    <section id="controls" class="controls" hidden>
-
-      <p class="panel-title">Введи количество часов</p>
-
-      <div class="counter">
-
-        <button
-          id="minusButton"
-          class="step-button"
-          type="button"
-          aria-label=""
-        >−</button>
-
-        <input
-          id="numberInput"
-          class="number-input"
-          type="number"
-          inputmode="numeric"
-          min="0"
-          max="999999"
-          step="1"
-          value="1"
-          aria-label="Текущее количество часов"
-        >
-
-        <button
-          id="plusButton"
-          class="step-button"
-          type="button"
-          aria-label=""
-        >+</button>
-
-      </div>
-
-      <p
-        id="pendingStatus"
-        class="pending-status"
-        aria-live="polite"
-      >
-        Выбрано часов: 1. Подтверди свой выбор.
-      </p>
-
-      <button
-        id="confirmButton"
-        class="confirm-button"
-        type="button"
-      >
-        ✓ Подтвердить
+    <div id="menu" class="menu" hidden>
+      <button class="option-button" data-add="1">
+        Добавить №1
       </button>
 
-    </section>
+      <button class="option-button" data-add="2">
+        Добавить №2
+      </button>
+    </div>
 
-    <p class="hint">Нажми на домик, чтобы обозначить число</p>
+    <p id="status" class="status" aria-live="polite">
+      Добавлено домиков: 0 из 4
+    </p>
+
+    <div id="imageGrid" class="image-grid">
+      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
+      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
+      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
+      <div class="image-slot"><span class="empty-slot">Пусто</span></div>
+    </div>
 
   </main>
 
   <script>
     const tg = window.Telegram?.WebApp;
 
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+    tg?.ready();
+    tg?.expand();
 
-    const imageButton = document.getElementById("imageButton");
-    const controls = document.getElementById("controls");
-    const numberInput = document.getElementById("numberInput");
-    const minusButton = document.getElementById("minusButton");
-    const plusButton = document.getElementById("plusButton");
-    const confirmButton = document.getElementById("confirmButton");
-    const pendingStatus = document.getElementById("pendingStatus");
-    const resultStatus = document.getElementById("resultStatus");
+    const mainButton = document.getElementById("mainButton");
+    const menu = document.getElementById("menu");
+    const status = document.getElementById("status");
+    const slots = [
+      ...document.querySelectorAll(".image-slot")
+    ];
+    const optionButtons = [
+      ...document.querySelectorAll("[data-add]")
+    ];
 
-    const MIN = 0;
-    const MAX = 999999;
+    const MAX_IMAGES = 4;
+    const imagePath = "./images/bonus.png";
 
-    let confirmedNumber = null;
+    let imagesAdded = 0;
 
-    imageButton.addEventListener("click", () => {
-      const isOpening = controls.hidden;
+    // Открыть или закрыть две кнопки
+    mainButton.addEventListener("click", () => {
+      menu.hidden = !menu.hidden;
 
-      if (isOpening) {
-        numberInput.value =
-          confirmedNumber === null ? 1 : confirmedNumber;
-
-        updatePendingStatus();
-        controls.hidden = false;
-        imageButton.setAttribute("aria-expanded", "true");
-      } else {
-        controls.hidden = true;
-        imageButton.setAttribute("aria-expanded", "false");
-      }
-    });
-
-    function getCurrentNumber() {
-      const value = Number(numberInput.value);
-
-      if (numberInput.value.trim() === "" || !Number.isFinite(value)) {
-        return MIN;
-      }
-
-      return Math.min(MAX, Math.max(MIN, Math.trunc(value)));
-    }
-
-    function updatePendingStatus() {
-      const value = getCurrentNumber();
-
-      pendingStatus.textContent =
-        `Выбрано часов: ${value}. Подтверди свой выбор.`;
-
-      minusButton.disabled = value <= MIN;
-      plusButton.disabled = value >= MAX;
-    }
-
-    minusButton.addEventListener("click", () => {
-      numberInput.value = Math.max(
-        MIN,
-        getCurrentNumber() - 1
+      mainButton.setAttribute(
+        "aria-expanded",
+        String(!menu.hidden)
       );
 
-      updatePendingStatus();
-      tg?.HapticFeedback?.selectionChanged();
+      mainButton.textContent = menu.hidden
+        ? "＋ Открыть меню"
+        : "− Скрыть меню";
     });
 
-    plusButton.addEventListener("click", () => {
-      numberInput.value = Math.min(
-        MAX,
-        getCurrentNumber() + 1
-      );
+    // Добавление одинаковых картинок
+    optionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (imagesAdded >= MAX_IMAGES) {
+          status.textContent = "Достигнут лимит: 4 домика.";
+          return;
+        }
 
-      updatePendingStatus();
-      tg?.HapticFeedback?.selectionChanged();
+        const slot = slots[imagesAdded];
+        const img = document.createElement("img");
+
+        img.src = imagePath;
+        img.alt = "Элемент коллекции";
+
+        img.onerror = () => {
+          img.remove();
+          slot.innerHTML =
+            '<span class="empty-slot">Ошибка загрузки</span>';
+        };
+
+        slot.replaceChildren(img);
+        imagesAdded++;
+
+        status.textContent =
+          `Добавлено домиков: ${imagesAdded} из ${MAX_IMAGES}`;
+
+        // Блокируем добавление после достижения лимита
+        if (imagesAdded >= MAX_IMAGES) {
+          optionButtons.forEach((item) => {
+            item.disabled = true;
+          });
+
+          status.textContent =
+            "Коллекция домиков заполнена: 4 из 4";
+        }
+
+        tg?.HapticFeedback?.impactOccurred("light");
+      });
     });
-
-    numberInput.addEventListener("input", () => {
-      updatePendingStatus();
-    });
-
-    numberInput.addEventListener("change", () => {
-      numberInput.value = getCurrentNumber();
-      updatePendingStatus();
-    });
-
-    confirmButton.addEventListener("click", () => {
-      confirmedNumber = getCurrentNumber();
-
-      numberInput.value = confirmedNumber;
-
-      resultStatus.textContent =
-        `✓ Подтверждено! Текущее число часов: ${confirmedNumber}`;
-
-      resultStatus.hidden = false;
-
-      controls.hidden = true;
-      imageButton.setAttribute("aria-expanded", "false");
-
-      tg?.HapticFeedback?.notificationOccurred("success");
-    });
-
-    updatePendingStatus();
   </script>
 </body>
 </html>
