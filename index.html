@@ -1,286 +1,243 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Doxb1t</title>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 22px 16px;
-      font-family: Arial, sans-serif;
-      background: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-text-color, #222222);
-    }
-
-    .app {
-      width: 100%;
-      max-width: 440px;
-      margin: 0 auto;
-    }
-
-    h2 {
-      margin: 0 0 20px;
-      text-align: center;
-      font-size: 23px;
-    }
-
-    /* Шесть кнопок */
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .fly-button {
-      min-width: 0;
-      min-height: 54px;
-      padding: 10px 4px;
-      border: none;
-      border-radius: 13px;
-      background: var(--tg-theme-button-color, #3287d8);
-      color: var(--tg-theme-button-text-color, #ffffff);
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .fly-button:active {
-      filter: brightness(0.9);
-    }
-
-    /* Статус */
-    .status {
-      margin: 18px 0;
-      text-align: center;
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--tg-theme-hint-color, #777777);
-    }
-
-    /* Сетка картинок */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .cell {
-      min-width: 0;
-    }
-
-    .picture-box {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      overflow: hidden;
-      border-radius: 15px;
-      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-      border: 1px solid var(--tg-theme-section-separator-color, #dddddd);
-    }
-
-    .picture-box img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .caption {
-      margin-top: 9px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: bold;
-    }
-
-    /* Летящая копия кнопки */
-    .flying {
-      position: fixed !important;
-      z-index: 9999;
-      margin: 0 !important;
-      pointer-events: none !important;
-      transform: none !important;
-      transition:
-        left 0.55s cubic-bezier(.2, .8, .2, 1),
-        top 0.55s cubic-bezier(.2, .8, .2, 1),
-        width 0.55s ease,
-        height 0.55s ease,
-        opacity 0.55s ease,
-        border-radius 0.55s ease;
-      will-change: left, top, width, height;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .flying {
-        transition-duration: 0.01ms;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Doxb1t</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#5aa74b;font-family:Arial,sans-serif;touch-action:none;user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hud{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.pill{pointer-events:auto;background:rgba(0,0,0,.45);color:#fff;border-radius:16px;padding:6px 12px;font-weight:bold;font-size:15px;text-align:right}
+.pill small{display:block;font-size:11px;font-weight:normal;opacity:.8}
+#flowerBtn{pointer-events:auto;width:72px;height:72px;border:none;border-radius:50%;background:rgba(0,0,0,.35);padding:4px}
+.fl{width:100%;height:100%;display:block;transition:filter .4s}
+.fl.glow{filter:drop-shadow(0 0 5px #ffe066)}
+.pulse .fl{animation:pl .9s ease-out}
+@keyframes pl{0%{transform:scale(1)}30%{transform:scale(1.35);filter:drop-shadow(0 0 14px #fff176)}100%{transform:scale(1)}}
+#joy{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);width:128px;height:128px;margin-left:-64px;border-radius:50%;background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.45);touch-action:none}
+#knob{position:absolute;left:38px;top:38px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.6)}
+#card{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 92px);max-width:420px;margin:0 auto;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#222);border-radius:16px;padding:12px;box-shadow:0 4px 18px rgba(0,0,0,.3);display:none}
+#card b{font-size:16px}
+.bar{height:8px;border-radius:4px;background:#ddd;margin:8px 0;overflow:hidden}.bar i{display:block;height:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button.b{flex:1;min-width:80px;border:none;border-radius:12px;padding:10px 6px;font-weight:bold;font-size:14px;background:var(--tg-theme-button-color,#3287d8);color:var(--tg-theme-button-text-color,#fff)}
+button.b:disabled{opacity:.4}button.b.red{background:#e0554f;color:#fff}button.b.gray{background:#8a8f98;color:#fff}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;touch-action:pan-y}
+#sheetIn{width:100%;max-width:480px;margin:0 auto;max-height:86%;overflow:auto;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#222);border-radius:20px 20px 0 0;padding:16px 14px calc(env(safe-area-inset-bottom,0px) + 16px)}
+h3{margin:0 0 10px;text-align:center}
+.sub{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #8883}
+.sub button{width:110px;flex:none}
+.hint{font-size:12px;opacity:.7;margin:10px 0;line-height:1.4}
+.room{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#c9a77a;padding:10px;border-radius:12px;border:4px solid #7a5a35}
+.slot{aspect-ratio:1;background:#e3c79b;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:34px;color:#8a6d45}
+.slot .bar{width:70%;margin:4px 0 0;height:5px}
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.shop button{border:1px solid #8885;border-radius:12px;background:#8881;padding:8px 2px;font-size:12px;color:inherit}
+.shop span{display:block;font-size:26px}
+#toast{position:fixed;left:50%;bottom:180px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 14px;border-radius:14px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:90%}
+</style>
 </head>
-
 <body>
-  <main class="app">
+<canvas id="c"></canvas>
+<div class="hud">
+  <button id="flowerBtn"></button>
+  <div class="pill" id="coins"></div>
+</div>
+<div id="card"></div>
+<div id="joy"><div id="knob"></div></div>
+<div id="sheet"><div id="sheetIn"></div></div>
+<div id="toast"></div>
 
-    <h2>Моя задачи</h2>
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready(); tg?.expand(); tg?.disableVerticalSwipes?.();
+const buzz = t => { try { tg?.HapticFeedback?.impactOccurred(t || 'light'); } catch(e){} };
 
-    <!-- Шесть постоянно работающих кнопок -->
-    <div class="buttons" id="buttons">
-      <button class="fly-button" type="button">Задача 1</button>
-      <button class="fly-button" type="button">Задача  2</button>
-      <button class="fly-button" type="button">Задача  3</button>
-      <button class="fly-button" type="button">Задача  4</button>
-      <button class="fly-button" type="button">Задача  5</button>
-      <button class="fly-button" type="button">Задача  6</button>
-    </div>
+/* ---------- Данные ---------- */
+const HOUSES = [
+  {name:'Здоровье', col:'#ef5350', subs:['Сон','Вода','Спорт','Питание','Прогулка']},
+  {name:'Разум',    col:'#42a5f5', subs:['Чтение','Учёба','Медитация','Дневник','Язык']},
+  {name:'Дело',     col:'#ffb300', subs:['План дня','Фокус-блок','Почта','Финансы','Портфолио']},
+  {name:'Отношения',col:'#ec6fb0', subs:['Звонок близким','Встреча','Комплимент','Помощь','Семья']}
+];
+const FURN = [
+  {id:'bed',e:'🛏️',n:'Кровать',p:40},{id:'sofa',e:'🛋️',n:'Диван',p:60},{id:'lamp',e:'💡',n:'Лампа',p:20},
+  {id:'tv',e:'📺',n:'ТВ',p:80},{id:'plant',e:'🪴',n:'Цветок',p:15},{id:'books',e:'📚',n:'Книги',p:30}
+];
+const LOSS = {coins:30, hp:20, dur:25}, ENTER_HP = 40, SLOTS = 6, INCOME = 0.1; // монет/сек за лепесток
+const KEY = 'flowertown_v1';
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e){}
+if (!S) S = {coins:50, t:Date.now(), h:HOUSES.map(()=>({subs:[0,0,0,0,0],hp:100,f:Array(SLOTS).fill(null)}))};
+const petals = () => S.h.reduce((a,h)=>a+h.subs.filter(Boolean).length,0);
+const rate = () => petals()*INCOME;
+S.coins += Math.min((Date.now()-S.t)/1000, 8*3600) * rate(); // капало, пока вас не было
+const save = () => { S.t = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} };
+const $ = id => document.getElementById(id);
+const cond = hp => hp>=70?'Отличное':hp>=ENTER_HP?'Потрёпанный':'Разрушен';
+const hpCol = hp => hp>=70?'#4caf50':hp>=ENTER_HP?'#ffb300':'#e53935';
+function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,1800);}
 
-    <p class="status" id="status" aria-live="polite">
-      Нажми на любую кнопку!
-    </p>
+/* ---------- Цветок ---------- */
+function flowerSVG(newIdx){
+  let p='';
+  for(let k=0;k<20;k++){
+    const hi=(k/5)|0, lit=S.h[hi].subs[k%5];
+    p+=`<ellipse cx="50" cy="26" rx="6.5" ry="15" transform="rotate(${k*18} 50 50)" fill="${lit?HOUSES[hi].col:'#999'}" opacity="${lit?1:.28}" stroke="${lit?'#fff':'none'}" stroke-width=".8"/>`;
+  }
+  return `<svg class="fl ${petals()?'glow':''}" viewBox="0 0 100 100">${p}<circle cx="50" cy="50" r="9" fill="${petals()?'#ffd54a':'#aaa'}"/></svg>`;
+}
+function drawFlower(pulse){
+  const b=$('flowerBtn'); b.innerHTML=flowerSVG();
+  if(pulse){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');}
+}
+function hud(){ $('coins').innerHTML=`🪙 ${Math.floor(S.coins)}<small>+${(rate()*60).toFixed(1)}/мин · 🌸 ${petals()}/20</small>`; }
 
-    <!-- Четыре постоянно видимые картинки -->
-    <div class="grid" id="grid">
+/* ---------- Действия ---------- */
+function levelUp(hi,j){
+  const h=S.h[hi]; if(h.subs[j])return;
+  h.subs[j]=1; h.hp=Math.min(100,h.hp+10);
+  drawFlower(true); hud(); save(); buzz('medium'); toast(`🌸 Новый лепесток: ${HOUSES[hi].subs[j]}`);
+}
+function lose(hi,j){
+  const h=S.h[hi]; if(!h.subs[j])return;
+  h.subs[j]=0; h.hp=Math.max(0,h.hp-LOSS.hp); S.coins=Math.max(0,S.coins-LOSS.coins);
+  h.f.forEach(f=>{ if(f) f.d=Math.max(0,f.d-LOSS.dur); });
+  drawFlower(); hud(); save(); buzz('heavy'); toast(`💥 Потеряно: −${LOSS.coins}🪙, дом и мебель повреждены`);
+}
+const repairCost = h => Math.ceil((100-h.hp)/10)*5 + h.f.reduce((a,f)=>a+(f?Math.ceil((100-f.d)/25)*5:0),0);
+function repair(hi){
+  const h=S.h[hi], c=repairCost(h);
+  if(!c)return; if(S.coins<c){toast('Не хватает монет');return;}
+  S.coins-=c; h.hp=100; h.f.forEach(f=>{if(f)f.d=100;}); hud(); save(); toast('🔧 Всё починено');
+}
+function buy(hi,id){
+  const h=S.h[hi], it=FURN.find(f=>f.id===id), s=h.f.indexOf(null);
+  if(s<0){toast('Нет свободных мест');return;} if(S.coins<it.p){toast('Не хватает монет');return;}
+  S.coins-=it.p; h.f[s]={id,d:100}; hud(); save(); buzz();
+}
 
-      <div class="cell">
-        <div class="picture-box" data-slot="0">
-          <img src="./images/bonus.png" alt="Первый">
-        </div>
-        <div class="caption">Первый домик</div>
-      </div>
+/* ---------- Окна ---------- */
+let sheetMode=null, sheetHi=0;
+function openSheet(mode,hi){sheetMode=mode;sheetHi=hi;renderSheet();$('sheet').style.display='flex';}
+function closeSheet(){sheetMode=null;$('sheet').style.display='none';updateCard(true);}
+function renderSheet(){
+  const hi=sheetHi,H=HOUSES[hi],h=S.h[hi]; let x='';
+  if(sheetMode==='flower'){
+    x=`<h3>Мой цветок · ${petals()}/20</h3><div style="width:230px;margin:0 auto">${flowerSVG()}</div>`+
+      HOUSES.map((H,i)=>`<div class="sub"><span style="color:${H.col}">●</span><span>${H.name}</span><b>${S.h[i].subs.filter(Boolean).length}/5</b></div>`).join('')+
+      `<p class="hint">Приток: 🪙 ${(rate()*60).toFixed(1)} в минуту. Чем больше лепестков — тем быстрее капают монеты.</p>`;
+  } else if(sheetMode==='tasks'){
+    x=`<h3>${H.name}: подпункты</h3>`+H.subs.map((n,j)=>`<div class="sub"><span>${h.subs[j]?'🌸':'▫️'} ${n}</span>`+
+      (h.subs[j]?`<button class="b red" data-a="lose" data-j="${j}">Потерял</button>`:`<button class="b" data-a="up" data-j="${j}">Прокачать</button>`)+`</div>`).join('')+
+      `<p class="hint">Потеря подпункта: −${LOSS.coins}🪙, дом −${LOSS.hp}%, мебель −${LOSS.dur}%.</p>`;
+  } else if(sheetMode==='room'){
+    x=`<h3>Дом «${H.name}» внутри</h3><div class="room">`+h.f.map(f=>{
+      if(!f)return `<div class="slot">＋</div>`; const it=FURN.find(i=>i.id===f.id);
+      return `<div class="slot"><span style="opacity:${.4+f.d/170};filter:${f.d<50?'grayscale(1)':'none'}">${f.d<30?'🪑':it.e}</span><div class="bar"><i style="width:${f.d}%;background:${hpCol(f.d)}"></i></div></div>`;
+    }).join('')+`</div><div class="shop">`+FURN.map(i=>`<button data-a="buy" data-id="${i.id}"><span>${i.e}</span>${i.n}<br>🪙 ${i.p}</button>`).join('')+`</div>`+
+      `<div class="row" style="margin-top:10px">${repairCost(h)?`<button class="b" data-a="repair">🔧 Починить всё (🪙 ${repairCost(h)})</button>`:''}</div>`;
+  }
+  $('sheetIn').innerHTML=x+`<div class="row" style="margin-top:12px"><button class="b gray" data-a="close">Закрыть</button></div>`;
+}
+$('sheet').addEventListener('click',e=>{
+  if(e.target.id==='sheet')return closeSheet();
+  const b=e.target.closest('[data-a]'); if(!b)return; const a=b.dataset.a, j=+b.dataset.j;
+  if(a==='close')closeSheet(); else{ if(a==='up')levelUp(sheetHi,j); if(a==='lose')lose(sheetHi,j); if(a==='buy')buy(sheetHi,b.dataset.id); if(a==='repair')repair(sheetHi); renderSheet(); }
+});
+$('flowerBtn').onclick=()=>openSheet('flower',0);
 
-      <div class="cell">
-        <div class="picture-box" data-slot="1">
-          <img src="./images/bonus.png" alt="Второй">
-        </div>
-        <div class="caption">Второй домик</div>
-      </div>
+/* ---------- Карточка дома ---------- */
+let near=-1;
+function updateCard(force){
+  const c=$('card');
+  if(near<0||sheetMode){c.style.display='none';return;}
+  const h=S.h[near],H=HOUSES[near],ok=h.hp>=ENTER_HP;
+  c.style.display='block';
+  c.innerHTML=`<b>🏠 ${H.name}</b> · ${cond(h.hp)} (${h.hp}%)<div class="bar"><i style="width:${h.hp}%;background:${hpCol(h.hp)}"></i></div>
+  <div class="row"><button class="b gray" data-a="tasks">Подпункты</button><button class="b" data-a="enter" ${ok?'':'disabled'}>${ok?'Войти':'🔒 Закрыт'}</button>
+  ${h.hp<100?`<button class="b red" data-a="fix">Починить ${repairCost(h)}🪙</button>`:''}</div>`;
+}
+$('card').addEventListener('click',e=>{
+  const a=e.target.closest('[data-a]')?.dataset.a; if(!a)return;
+  if(a==='tasks')openSheet('tasks',near); if(a==='enter')openSheet('room',near); if(a==='fix'){repair(near);updateCard();}
+});
 
-      <div class="cell">
-        <div class="picture-box" data-slot="2">
-          <img src="./images/bonus.png" alt="Третий">
-        </div>
-        <div class="caption">Третий домик</div>
-      </div>
+/* ---------- Мир ---------- */
+const cv=$('c'),ctx=cv.getContext('2d'); let W=360,VH=640,SC=1;
+const LEN=1260, ROAD=62, HW=92, HH=Math.round(HW*581/377);
+const cx=y=>180+20*Math.sin(y/90);
+const hs=HOUSES.map((_,i)=>({i,side:i%2?1:-1,y:210+i*250}));
+const img=new Image(), sprites=[]; img.src='./images/house.png';
+img.onload=()=>{ for(let lv=0;lv<3;lv++){
+  const o=document.createElement('canvas'); o.width=img.width; o.height=img.height; const g=o.getContext('2d'); g.drawImage(img,0,0);
+  if(lv){ g.globalCompositeOperation='source-atop'; g.fillStyle=lv==1?'rgba(70,50,30,.22)':'rgba(15,10,10,.55)'; g.fillRect(0,0,o.width,o.height);
+    g.strokeStyle='#111'; g.lineWidth=lv==1?3:5; const n=lv==1?3:8;
+    for(let k=0;k<n;k++){ let x=40+(k*97)%290,y=60+(k*151)%440; g.beginPath(); g.moveTo(x,y); for(let m=0;m<4;m++){x+=((k+m)%2?18:-14);y+=26;g.lineTo(x,y);} g.stroke(); }
+    if(lv==2){ g.fillStyle='#5a3b1c'; g.fillRect(60,330,260,26); g.fillRect(90,400,230,22); } }
+  sprites.push(o); } };
+function resize(){const d=devicePixelRatio||1;cv.width=innerWidth*d;cv.height=innerHeight*d;SC=innerWidth/W;VH=innerHeight/SC;ctx.setTransform(d*SC,0,0,d*SC,0,0);ctx.imageSmoothingEnabled=false;}
+addEventListener('resize',resize); resize();
 
-      <div class="cell">
-        <div class="picture-box" data-slot="3">
-          <img src="./images/bonus.png" alt="Четвёртый">
-        </div>
-        <div class="caption">Четвёртый домик</div>
-      </div>
+const P={x:180,y:LEN-110,ph:0,mv:false}, J={x:0,y:0};
+/* джойстик */
+const joy=$('joy'),knob=$('knob'); let jid=null;
+function jset(e){const r=joy.getBoundingClientRect(),R=r.width/2;let dx=e.clientX-(r.left+R),dy=e.clientY-(r.top+R);const d=Math.hypot(dx,dy),m=R*.55;if(d>m){dx*=m/d;dy*=m/d;}
+  knob.style.transform=`translate(${dx}px,${dy}px)`;J.x=dx/m;J.y=dy/m;}
+joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid);jset(e);});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===jid)jset(e);});
+const jend=e=>{if(e.pointerId!==jid)return;jid=null;J.x=J.y=0;knob.style.transform='';};
+joy.addEventListener('pointerup',jend);joy.addEventListener('pointercancel',jend);
+const K={}; addEventListener('keydown',e=>K[e.key.toLowerCase()]=1); addEventListener('keyup',e=>K[e.key.toLowerCase()]=0);
 
-    </div>
-  </main>
-
-  <script>
-    const tg = window.Telegram?.WebApp;
-
-    tg?.ready();
-    tg?.expand();
-
-    const buttons = [
-      ...document.querySelectorAll(".fly-button")
-    ];
-
-    const slots = [
-      ...document.querySelectorAll(".picture-box")
-    ];
-
-    const status = document.getElementById("status");
-
-    let totalFlights = 0;
-
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-
-        // Выбираем случайную картинку
-        const randomIndex = Math.floor(
-          Math.random() * slots.length
-        );
-
-        const target = slots[randomIndex];
-
-        // Координаты кнопки и картинки
-        const start = button.getBoundingClientRect();
-        const end = target.getBoundingClientRect();
-
-        // Создаём копию кнопки.
-        // Оригинал остаётся на месте и работает.
-        const flyer = button.cloneNode(true);
-
-        flyer.classList.add("flying");
-        flyer.setAttribute("aria-hidden", "true");
-        flyer.tabIndex = -1;
-
-        Object.assign(flyer.style, {
-          left: start.left + "px",
-          top: start.top + "px",
-          width: start.width + "px",
-          height: start.height + "px",
-          opacity: "1"
-        });
-
-        document.body.appendChild(flyer);
-
-        // Сначала фиксируем начальную позицию,
-        // затем запускаем анимацию
-        flyer.getBoundingClientRect();
-
-        requestAnimationFrame(() => {
-          const currentEnd = target.getBoundingClientRect();
-
-          flyer.style.left =
-            (currentEnd.left + currentEnd.width * 0.25) + "px";
-
-          flyer.style.top =
-            (currentEnd.top + currentEnd.height * 0.25) + "px";
-
-          flyer.style.width =
-            (currentEnd.width * 0.5) + "px";
-
-          flyer.style.height =
-            (currentEnd.height * 0.5) + "px";
-
-          flyer.style.opacity = "0.25";
-          flyer.style.borderRadius = "12px";
-        });
-
-        let finished = false;
-
-        function finishFlight() {
-          if (finished) return;
-          finished = true;
-
-          flyer.remove();
-
-          totalFlights++;
-
-          status.textContent =
-            ``;
-
-          tg?.HapticFeedback?.impactOccurred("light");
-        }
-
-        flyer.addEventListener("transitionend", (event) => {
-          if (event.propertyName === "left") {
-            finishFlight();
-          }
-        });
-
-        // Защита от зависания анимации
-        setTimeout(finishFlight, 800);
-      });
-    });
-  </script>
+function frame(t){
+  const dt=Math.min((t-(frame.l||t))/1000,.05); frame.l=t;
+  let vx=J.x,vy=J.y;
+  if(K.arrowleft||K.a)vx-=1; if(K.arrowright||K.d)vx+=1; if(K.arrowup||K.w)vy-=1; if(K.arrowdown||K.s)vy+=1;
+  const m=Math.hypot(vx,vy); if(m>1){vx/=m;vy/=m;}
+  P.mv=!sheetMode&&m>.08;
+  if(P.mv){P.x+=vx*100*dt;P.y+=vy*100*dt;P.ph+=dt*11;}
+  P.y=Math.max(60,Math.min(LEN-40,P.y)); const c=cx(P.y); P.x=Math.max(c-ROAD,Math.min(c+ROAD,P.x));
+  S.coins+=rate()*dt; if((frame.u=(frame.u||0)+dt)>.5){frame.u=0;hud();}
+  if((frame.s=(frame.s||0)+dt)>3){frame.s=0;save();}
+  /* ближайший дом */
+  let n=-1,best=75;
+  hs.forEach(h=>{const d=Math.hypot(P.x-(cx(h.y)+h.side*ROAD),P.y-(h.y-25));if(d<best){best=d;n=h.i;}});
+  if(n!==near){near=n;updateCard();}
+  draw();
+  requestAnimationFrame(frame);
+}
+function draw(){
+  const cam=Math.max(0,Math.min(LEN-VH,P.y-VH*.62)), y0=cam-10, y1=cam+VH+10;
+  ctx.fillStyle='#5aa74b'; ctx.fillRect(0,0,W,VH);
+  ctx.save(); ctx.translate(0,-cam);
+  for(let y=Math.floor(y0/24)*24;y<y1;y+=24)for(let x=0;x<W;x+=24){const r=(x*73+y*131)%7; if(r<2){ctx.fillStyle=r?'#4f9a42':'#69b85a';ctx.fillRect(x+(y%5)*3,y+(x%7)*2,3,3);}}
+  [['#a8895a',ROAD*2+14],['#d2b886',ROAD*2-8]].forEach(([col,w])=>{ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineJoin='round';ctx.beginPath();
+    for(let y=Math.max(0,y0);y<=Math.min(LEN,y1);y+=8)y===Math.max(0,y0)?ctx.moveTo(cx(y),y):ctx.lineTo(cx(y),y);ctx.stroke();});
+  for(let y=Math.floor(y0/80)*80;y<y1;y+=80){const o=(y*37)%30;[[12+o%9,0],[348-o%9,1]].forEach(([x])=>{ctx.fillStyle='#2e7d32';ctx.beginPath();ctx.arc(x,y,13,0,7);ctx.fill();ctx.fillStyle='#3f9a45';ctx.beginPath();ctx.arc(x-3,y-3,8,0,7);ctx.fill();});}
+  const items=hs.map(h=>({y:h.y,f:()=>drawHouse(h)})); items.push({y:P.y,f:drawPlayer}); items.sort((a,b)=>a.y-b.y).forEach(i=>i.f());
+  ctx.restore();
+}
+function drawHouse(h){
+  const hp=S.h[h.i].hp, x=cx(h.y)+h.side*(ROAD+4)+(h.side<0?-HW:0), y=h.y-HH+10, sp=sprites[hp>=70?0:hp>=ENTER_HP?1:2];
+  ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(x+4,h.y+4,HW,6);
+  if(sp)ctx.drawImage(sp,x,y,HW,HH); else if(img.complete)ctx.drawImage(img,x,y,HW,HH);
+  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(x+HW/2-24,y-12,48,7);ctx.fillStyle=hpCol(hp);ctx.fillRect(x+HW/2-23,y-11,46*hp/100,5);
+  ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#0008';ctx.lineWidth=3;ctx.strokeText(HOUSES[h.i].name,x+HW/2,y-17);ctx.fillText(HOUSES[h.i].name,x+HW/2,y-17);
+  if(hp<ENTER_HP)ctx.fillText('🚧',x+HW/2,y+HH/2);
+}
+function drawPlayer(){ /* вид со спины, пиксель-арт */
+  const x=Math.round(P.x),y=Math.round(P.y),s=P.mv?Math.sin(P.ph)*3:0,R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y,9,4,0,0,7);ctx.fill();
+  R('#2d3a55',-6,-9+s*.5,5,9-s*.5);R('#2d3a55',1,-9-s*.5,5,9+s*.5);
+  R('#3287d8',-7,-24,14,16);R('#2a6fb5',-9,-23,3,11);R('#2a6fb5',6,-23,3,11);
+  R('#f1c27d',-5,-27,10,3);R('#5b3a1e',-6,-36,12,12);
+}
+hud(); drawFlower(); requestAnimationFrame(frame);
+addEventListener('beforeunload',save); document.addEventListener('visibilitychange',save);
+</script>
 </body>
 </html>
